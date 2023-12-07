@@ -23,6 +23,7 @@ type packetizer struct {
 	MTU         uint16
 	PayloadType uint8
 	SSRC        uint32
+	flag        bool
 	Payloader   Payloader
 	Sequencer   Sequencer
 	Timestamp   uint32
@@ -42,6 +43,7 @@ func NewPacketizer(mtu uint16, pt uint8, ssrc uint32, payloader Payloader, seque
 		MTU:         mtu,
 		PayloadType: pt,
 		SSRC:        ssrc,
+		flag:        true,
 		Payloader:   payloader,
 		Sequencer:   sequencer,
 		Timestamp:   globalMathRandomGenerator.Uint32(),
@@ -70,7 +72,7 @@ func (p *packetizer) Packetize(payload []byte, samples uint32) []*Packet {
 				Version:        2,
 				Padding:        false,
 				Extension:      false,
-				Marker:         i == len(payloads)-1,
+				Marker:         p.flag,
 				PayloadType:    p.PayloadType,
 				SequenceNumber: p.Sequencer.NextSequenceNumber(),
 				Timestamp:      p.Timestamp, // Figure out how to do timestamps
@@ -79,6 +81,7 @@ func (p *packetizer) Packetize(payload []byte, samples uint32) []*Packet {
 			},
 			Payload: pp,
 		}
+		p.flag = false
 	}
 	p.Timestamp += samples
 
