@@ -1,4 +1,4 @@
-module github.com/pion/rtp
+module github.com/apifonica/rtp
 
 go 1.19
 
